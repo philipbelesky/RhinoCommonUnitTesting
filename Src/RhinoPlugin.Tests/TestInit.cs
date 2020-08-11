@@ -15,6 +15,8 @@ namespace RhinoPluginTests
         static bool initialized = false;
         static string systemDir = null;
         static string systemDirOld = null;
+        static string grasshopperDir = null;
+        static string grasshopperDirOld = null;
 
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
@@ -40,14 +42,25 @@ namespace RhinoPluginTests
                 systemDir = systemDirOld;
             }
 
-
             Assert.IsTrue(System.IO.Directory.Exists(systemDir), "Rhino system dir not found: {0}", systemDir);
-
-            // Add rhino system directory to path (for RhinoLibrary.dll)
-            Environment.SetEnvironmentVariable("path", envPath + ";" + systemDir);
 
             // Add hook for .Net assmbly resolve (for RhinoCommmon.dll)
             AppDomain.CurrentDomain.AssemblyResolve += ResolveRhinoCommon;
+
+            grasshopperDir = System.IO.Path.Combine(programFiles, "Rhino 7 WIP", "Plug-ins", "Grasshopper");
+            grasshopperDirOld = System.IO.Path.Combine(programFiles, "Rhino WIP", "Plug-ins", "Grasshopper");
+            if (System.IO.Directory.Exists(grasshopperDir) != true)
+            {
+                grasshopperDir = grasshopperDirOld;
+            }
+
+            Assert.IsTrue(System.IO.Directory.Exists(grasshopperDir), "Grasshopper dir not found: {0}", grasshopperDir);
+
+            // Add hino system directory to path (for RhinoLibrary.dll) and Grasshopper directory to path (in case it fixes?)
+            Environment.SetEnvironmentVariable("path", envPath + ";" + systemDir + ";" + grasshopperDir);
+
+            // Add hook for .Net assmbly resolve (for Grasshopper.dll)
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveGrasshopper;
 
             // Start headless Rhino process
             LaunchInProcess(0, 0);
@@ -63,6 +76,21 @@ namespace RhinoPluginTests
             }
 
             var path = System.IO.Path.Combine(systemDir, "RhinoCommon.dll");
+            return Assembly.LoadFrom(path);
+        }
+
+        private static Assembly ResolveGrasshopper(object sender, ResolveEventArgs args)
+        {
+            var name = args.Name;
+
+            if (!name.StartsWith("Grasshopper"))
+            {
+                return null;
+            }
+
+            if (args.Name.Contains(".resources,")) { return null; }
+
+            var path = System.IO.Path.Combine(grasshopperDir, "Grasshopper.dll");
             return Assembly.LoadFrom(path);
         }
 

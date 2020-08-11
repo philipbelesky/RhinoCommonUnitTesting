@@ -10,6 +10,18 @@
        <HintPath>C:\Program Files\Rhino WIP\System\RhinoCommon.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Grasshopper">
+       <HintPath>C:\Program Files\Rhino WIP\Plug-ins\Grasshopper\Grasshopper.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Eto">
+       <HintPath>C:\Program Files\Rhino WIP\System\Eto.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="IronPython">
+       <HintPath>C:\Program Files\Rhino WIP\Plug-ins\IronPython\IronPython.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
-  
+
 </Project>
